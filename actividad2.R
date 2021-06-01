@@ -120,7 +120,9 @@ plot(clasificacion)
 for (i in 1:10){
   x = cont[[1]][i]
   y = cont[[2]][i]
-  segments(x0=x,y0=0,x1=x,y1=y,col="red")
+  z = cont[[3]][i]
+  y_ = y/z
+  segments(x0=x,y0=0,x1=x,y1=y_,col="red")
 }
 lines(graf,type="l")
 
@@ -162,29 +164,77 @@ for (i in 1:100){
 }
 pres = (Tp+Tn)/(Tp+Tn+Fp+Fn)
 pres
+for (i in 1:10){
+  x = cont[[1]][i]
+  y = cont[[2]][i]
+  segments(x0=x,y0=0,x1=x,y1=y,col="red")
+}
 
+for (punto in clasificacion[[1]]){
+  print(punto*10)  
+}
+
+print(cont[[1]][1]+0.05)
+print()
+
+punto1 <- list(-2.00,9.08)
+punto2 <- list(-3.05,8.97)
+punto3 <- list(-3.99,8.97)
+punto4 <- list(-5.04,10.72)
+punto5 <- list(-6.00,8.51)
+punto6 <- list(-5.95,10.17)
+
+
+calsificacion2 = clasificacion
+clasificacion_s <- read.csv("sortedcl.csv",sep=",")
 
 lista <- list(punto1,punto2,punto3,punto4,punto5,punto6) 
 saveGIF({
-  X = seq(0,1,0.05)
+  X = clasificacion_s[[1]]
+  
   for (punto in lista){
     Y <- vector()
-    B0 <- as.numeric(punto[['x']])
-    B1 <- as.numeric(punto[['y']])
+    B0 <- as.numeric(punto[[1]])
+    B1 <- as.numeric(punto[[2]])
     a=0
+    #print(B0)
+    ocurr <- vector()
+    contador = 0
+    c2=1
+    l_s = cont[[1]][c2]+0.05
     for (x in X){
-      print(a)
+      
+      
+      #print(a)
       tmp = 1/(1+exp(-1*(B0+B1*x)))
       Y = c(Y,tmp)
+      a = a+1
       
-      a = a+1}
+      if (x > l_s){
+        c2 = c2+1
+        l_s = cont[[1]][c2]+0.05
+        ocurr = c(ocurr,contador)
+        if (tmp >= 0.5){
+          contador = 1
+        } 
+        
+      }
+      if (x <= l_s){
+          if (tmp >= 0.5){
+            contador = contador+1
+          } 
+        
+      }
+      
+    }
+    ocurr = c(ocurr,contador)
    
     graf <- list(X,Y)
     names(graf) <- c("x", "y")
     plot(clasificacion)
     for (i in 1:10){
       x = cont[[1]][i]
-      y = cont[[2]][i]
+      y = ocurr[i]/cont[[3]][i]
       segments(x0=x,y0=0,x1=x,y1=y,col="red")
     }
     lines(graf,type="l")}
@@ -192,8 +242,8 @@ saveGIF({
 })
 l_p <-append(l_p, punto1)
 
-
-
+lines(graf,type="l")
+graf
 
 
 
